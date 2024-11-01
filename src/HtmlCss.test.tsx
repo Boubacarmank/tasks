@@ -61,23 +61,10 @@ describe("(2 pts) Some Bootstrap Elements are added", () => {
 
 describe("Some additional CSS was added", () => {
     test("(2 pts) checks if any element has a background color of red", () => {
-        const { container } = render(<App />);
-        // Get all elements in the rendered container
-        const elements = container.querySelectorAll("*");
-
-        // Check if any element has a background color of red
-        let foundRedBackground = false;
-
-        elements.forEach((element) => {
-            const style = getComputedStyle(element);
-            if (
-                style.backgroundColor === "red" ||
-                style.backgroundColor === "rgb(255, 0, 0)"
-            ) {
-                foundRedBackground = true;
-            }
-        });
-
-        expect(foundRedBackground).toBe(true);
+        render(<App />);
+        // Find the element with the text 'This div has a red background'
+        const redElement = screen.getByText(/This div has a red background/i);
+        // Check that the element has the 'red-background' class
+        expect(redElement.parentElement).toHaveClass("red-background");
     });
 });
