@@ -1,4 +1,10 @@
+ solved-components
 import { Question } from "./interfaces/question";
+
+import { Answer } from "./interfaces/answer";
+import { Question, QuestionType } from "./interfaces/question";
+import { makeBlankQuestion } from "./objects"; // Assuming makeBlankQuestion is defined in objects.ts
+ main
 
 /**
  * Retrieves all published questions from the list.
@@ -14,8 +20,13 @@ export function getNonEmptyQuestions(questions: Question[]): Question[] {
     return questions.filter(
         (question) =>
             question.body !== "" ||
+ solved-components
             question.options.length > 0 ||
             question.expected !== "",
+
+            question.expected !== "" ||
+            question.options.length > 0,
+ main
     );
 }
 
@@ -57,6 +68,10 @@ export function makeAnswers(questions: Question[]): {
         correct: false,
         text: "",
         submitted: false,
+ solved-components
+
+        correct: false,
+ main
     }));
 }
 
@@ -100,7 +115,11 @@ export function renameQuestionById(
     newName: string,
 ): Question[] {
     return questions.map((question) =>
+ solved-components
         question.id === id ? { ...question, name: newName } : question,
+
+        question.id === targetId ? { ...question, name: newName } : question,
+ main
     );
 }
 
@@ -120,6 +139,7 @@ export function editOption(
     newOption: string,
 ): Question[] {
     return questions.map((question) => {
+ solved-components
         if (
             question.id === questionId &&
             question.type === "multiple_choice_question"
@@ -129,6 +149,18 @@ export function editOption(
                 newOptions.push(newOption);
             } else {
                 newOptions[optionIndex] = newOption;
+
+        if (question.id === targetId) {
+            let newOptions;
+            if (targetOptionIndex === -1) {
+                // Add the new option to the end
+                newOptions = [...question.options, newOption];
+            } else {
+                // Replace the option at the target index
+                newOptions = question.options.map((option, index) =>
+                    index === targetOptionIndex ? newOption : option,
+                );
+ main
             }
             return { ...question, options: newOptions };
         }
