@@ -1,40 +1,20 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+// DoubleHalf.tsx
+import React from "react";
 import { Button } from "react-bootstrap";
-import { dhValue, setDhValue } from "./DoubleHalfState";
-
-function Doubler(): React.JSX.Element {
-    return (
-        <Button
-            onClick={() => {
-                setDhValue(2 * dhValue);
-            }}
-        >
-            Double
-        </Button>
-    );
-}
-
-function Halver(): React.JSX.Element {
-    return (
-        <Button
-            onClick={() => {
-                setDhValue(0.5 * dhValue);
-            }}
-        >
-            Halve
-        </Button>
-    );
-}
+import { useDoubleHalfState } from "./DoubleHalfState";
 
 export function DoubleHalf(): React.JSX.Element {
+    const { value, double, halve } = useDoubleHalfState();
+
     return (
         <div>
             <h3>Double Half</h3>
             <div>
-                The current value is: <span>{dhValue}</span>
+                The current value is: <span>{value}</span>
             </div>
-            <Doubler></Doubler>
-            <Halver></Halver>
+            <Button onClick={double}>Double</Button>
+            <Button onClick={halve}>Halve</Button>
         </div>
     );
 }
