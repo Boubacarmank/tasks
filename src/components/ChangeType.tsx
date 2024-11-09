@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import { Button } from "react-bootstrap";
+ solved-components
+
+export function ChangeType(): React.JSX.Element {
+    const [type, setType] = useState<"Short Answer" | "Multiple Choice">(
+        "Short Answer",
+    );
+
+    const toggleType = () => {
+        setType((prevType) =>
+            prevType === "Short Answer" ? "Multiple Choice" : "Short Answer",
+
 import { QuestionType } from "../interfaces/question"; // Ensure this interface is defined with values "short_answer_question" and "multiple_choice_question"
 
 describe("ChangeType Component tests", () => {
@@ -23,11 +34,18 @@ export function ChangeType(): React.JSX.Element {
             prevType === "short_answer_question" ?
                 "multiple_choice_question"
             :   "short_answer_question",
+ main
         );
     };
 
     return (
         <div>
+ solved-components
+            <div>{type}</div>{" "}
+            {/* Displays "Short Answer" or "Multiple Choice" */}
+            <Button onClick={toggleType}>Change Type</Button>{" "}
+            {/* Button with label "Change Type" */}
+
             {/* Display either "Short Answer" or "Multiple Choice" based on the questionType state */}
             <p>
                 {questionType === "short_answer_question" ?
@@ -36,6 +54,7 @@ export function ChangeType(): React.JSX.Element {
             </p>
             {/* Button to change the type */}
             <Button onClick={toggleQuestionType}>Change Type</Button>
+ main
         </div>
     );
 }

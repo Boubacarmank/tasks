@@ -13,6 +13,36 @@ describe("RevealAnswer Component", () => {
         render(<RevealAnswer />);
         expect(screen.queryByText("42")).toBeNull(); // Ensures answer is hidden on load
     });
+ solved-components
+    test("(1 pts) There is a Reveal Answer button", () => {
+        const revealButton = screen.getByRole("button", {
+            name: /Reveal Answer/i,
+        });
+        expect(revealButton).toBeInTheDocument();
+    });
+    test("(1 pts) Clicking Reveal Answer button reveals the '42'", async () => {
+        const revealButton = screen.getByRole("button", {
+            name: /Reveal Answer/i,
+        });
+        await act(async () => {
+            revealButton.click();
+        });
+        const answerText = screen.getByText(/42/);
+        expect(answerText).toBeInTheDocument();
+    });
+    test("(1 pts) Clicking Reveal Answer button twice hides the '42'", async () => {
+        const revealButton = screen.getByRole("button", {
+            name: /Reveal Answer/i,
+        });
+        await act(async () => {
+            revealButton.click();
+        });
+        await act(async () => {
+            revealButton.click();
+        });
+        const answerText = screen.queryByText(/42/);
+        expect(answerText).toBeNull();
+
 
     test("reveals the answer after clicking the button once", () => {
         render(<RevealAnswer />);
@@ -50,5 +80,6 @@ describe("RevealAnswer Component", () => {
 
         fireEvent.click(button); // Hide again
         expect(screen.queryByText("42")).toBeNull();
+ main
     });
 });
