@@ -21,13 +21,17 @@ export function TwoDice({
     return (
         <div>
             <Button
-                onClick={() => setLeftDie(rollDie())}
+                onClick={() => {
+                    setLeftDie(rollDie());
+                }}
                 data-testid="roll-left"
             >
                 Roll Left
             </Button>
             <Button
-                onClick={() => setRightDie(rollDie())}
+                onClick={() => {
+                    setRightDie(rollDie());
+                }}
                 data-testid="roll-right"
             >
                 Roll Right
