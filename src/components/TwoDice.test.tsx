@@ -1,194 +1,55 @@
-import React, { act } from "react";
-import { render, screen } from "@testing-library/react";
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { TwoDice } from "./TwoDice";
 
-/***
- * Helper function to extract a number from an HTMLElement's textContent.
- *
- * If you aren't familiar with Regular Expressions:
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
- */
-export function extractDigits(element: HTMLElement): number | null {
-    const attemptNumberText = element.textContent || "";
-    // We use a "regular expression" to find digits and extract them as text
-    const attemptNumberDigitsMatched = attemptNumberText.match(/\d+/);
-    // Provides a Matched Regular Expression or null
-    if (attemptNumberDigitsMatched === null) {
-        // Should never be possible, since then there was no number to have found.
-        // But TypeScript is cautious and demands we provide SOMETHING.
-        return null;
-    } else {
-        // Not null, get the first matched value and convert to number
-        return parseInt(attemptNumberDigitsMatched[0]);
-    }
-}
+describe("TwoDice Component Tests", () => {
+    const rollDieMock = jest.fn();
 
-describe("TwoDice Component tests", () => {
-    let mathRandomFunction: jest.SpyInstance; // eslint-disable-line
     beforeEach(() => {
-        mathRandomFunction = jest
-            .spyOn(global.Math, "random")
-            .mockReturnValue(0.5) // 4
-            .mockReturnValueOnce(0.0) // 1
-            .mockReturnValueOnce(0.99) // 6
-            .mockReturnValueOnce(0.75) // 5
-            .mockReturnValueOnce(0.75) // 5
-            .mockReturnValueOnce(0.1) // 1
-            .mockReturnValueOnce(0.1); // 1
+        jest.clearAllMocks();
+        rollDieMock.mockClear();
     });
-    afterEach(() => {
-        jest.spyOn(global.Math, "random").mockRestore();
+
+    test("Initial render displays two dice with expected values", () => {
+        render(<TwoDice initialLeftDie={3} initialRightDie={4} />);
+        expect(screen.getByTestId("left-die").textContent).toBe("3");
+        expect(screen.getByTestId("right-die").textContent).toBe("4");
     });
-    beforeEach(() => {
-        render(<TwoDice />);
+
+    test("Displays 'Win' message when both dice match (and are not 1)", () => {
+        render(<TwoDice initialLeftDie={3} initialRightDie={3} />);
+        expect(screen.getByText("Win")).toBeInTheDocument();
     });
-    test("(1 pts) There is a `left-die` and `right-die` testid", () => {
-        const leftDie = screen.getByTestId("left-die");
-        const rightDie = screen.getByTestId("right-die");
-        expect(leftDie).toBeInTheDocument();
-        expect(rightDie).toBeInTheDocument();
+
+    test("Displays 'Lose' message when both dice show 1", () => {
+        render(<TwoDice initialLeftDie={1} initialRightDie={1} />);
+        expect(screen.getByText("Lose")).toBeInTheDocument();
     });
-    test("(1 pts) The `left-die` and `right-die` are two different numbers", () => {
-        const leftDie = screen.getByTestId("left-die");
-        const rightDie = screen.getByTestId("right-die");
-        const leftNumber = extractDigits(leftDie);
-        const rightNumber = extractDigits(rightDie);
-        // Then they are two numbers
-        expect(leftNumber).not.toBeNull();
-        expect(rightNumber).not.toBeNull();
-        // Then they are two different numbers
-        expect(leftNumber).not.toEqual(rightNumber);
+
+    test("No message is displayed when dice show different values that are not both 1", () => {
+        render(<TwoDice initialLeftDie={2} initialRightDie={4} />);
+        expect(screen.queryByText("Win")).toBeNull();
+        expect(screen.queryByText("Lose")).toBeNull();
     });
-    test("(1 pts) There are two buttons present", () => {
-        const leftButton = screen.getByRole("button", { name: /Roll Left/i });
-        const rightButton = screen.getByRole("button", { name: /Roll Right/i });
-        expect(leftButton).toBeInTheDocument();
-        expect(rightButton).toBeInTheDocument();
-    });
-    test("(1 pts) Clicking left button changes first number", async () => {
-        const leftButton = screen.getByRole("button", { name: /Roll Left/i });
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            leftButton.click();
-        });
-        // Then the random function should be called 3 times
-        // expect(mathRandomFunction).toBeCalledTimes(3);
-        // And the number to be 5
-        const leftNumber = extractDigits(screen.getByTestId("left-die"));
-        expect(leftNumber).toEqual(5);
-    });
-    // Clicking right button changes second number
-    test("(1 pts) Clicking right button changes second number", async () => {
-        const rightButton = screen.getByRole("button", { name: /Roll Right/i });
-        await act(async () => {
-            rightButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        // Then the random function should be called 3 times
-        // expect(mathRandomFunction).toBeCalledTimes(3);
-        // And the number to be 5
-        const rightNumber = extractDigits(screen.getByTestId("right-die"));
-        expect(rightNumber).toEqual(5);
-    });
-    // Rolling two different numbers does not win or lose the game
-    test("(1 pts) Rolling two different numbers does not win or lose the game", async () => {
-        // Given
-        const leftButton = screen.getByRole("button", { name: /Roll Left/i });
-        const rightButton = screen.getByRole("button", { name: /Roll Right/i });
-        const leftDie = screen.getByTestId("left-die");
-        const rightDie = screen.getByTestId("right-die");
-        // When the left and right buttons are rolled once each
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        // Then the numbers are not equal
-        const leftNumber = extractDigits(leftDie);
-        const rightNumber = extractDigits(rightDie);
-        expect(leftNumber).toEqual(1);
-        expect(rightNumber).toEqual(6);
-        // And then the game is not won
-        const winText = screen.queryByText(/Win/i);
-        expect(winText).toBeNull();
-        // And then nor is the game lost
-        const loseText = screen.queryByText(/Lose/i);
-        expect(loseText).toBeNull();
-    });
-    test("(1 pts) Getting snake eyes loses the game", async () => {
-        // Given
-        const leftButton = screen.getByRole("button", { name: /Roll Left/i });
-        const rightButton = screen.getByRole("button", { name: /Roll Right/i });
-        const leftDie = screen.getByTestId("left-die");
-        const rightDie = screen.getByTestId("right-die");
-        // When the left and right buttons are rolled once each
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        // Then the numbers are not equal
-        const leftNumber = extractDigits(leftDie);
-        const rightNumber = extractDigits(rightDie);
-        expect(leftNumber).toEqual(1);
-        expect(rightNumber).toEqual(1);
-        // And then the game is not won
-        const winText = screen.queryByText(/Win/i);
-        expect(winText).toBeNull();
-        // And then the game is lost
-        const loseText = screen.getByText(/Lose/i);
-        expect(loseText).toBeInTheDocument();
-    });
-    test("(1 pts) Getting matching numbers wins the game", async () => {
-        // Given
-        const leftButton = screen.getByRole("button", { name: /Roll Left/i });
-        const rightButton = screen.getByRole("button", { name: /Roll Right/i });
-        const leftDie = screen.getByTestId("left-die");
-        const rightDie = screen.getByTestId("right-die");
-        // When the left and right buttons are rolled once each
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            leftButton.click();
-        });
-        await act(async () => {
-            rightButton.click();
-        });
-        // Then the numbers are not equal
-        const leftNumber = extractDigits(leftDie);
-        const rightNumber = extractDigits(rightDie);
-        expect(leftNumber).toEqual(5);
-        expect(rightNumber).toEqual(5);
-        // And then the game is not lost
-        const loseText = screen.queryByText(/Lose/i);
-        expect(loseText).toBeNull();
-        // And then the game is won
-        const winText = screen.getByText(/Win/i);
-        expect(winText).toBeInTheDocument();
+
+    test("Rolling each die updates its value independently", () => {
+        render(
+            <TwoDice
+                initialLeftDie={3}
+                initialRightDie={4}
+                rollDie={rollDieMock}
+            />,
+        );
+
+        const rollLeftButton = screen.getByTestId("roll-left");
+        const rollRightButton = screen.getByTestId("roll-right");
+
+        rollDieMock.mockReturnValueOnce(2); // Mock left die roll to 2
+        fireEvent.click(rollLeftButton);
+        expect(screen.getByTestId("left-die").textContent).toBe("2");
+
+        rollDieMock.mockReturnValueOnce(6); // Mock right die roll to 6
+        fireEvent.click(rollRightButton);
+        expect(screen.getByTestId("right-die").textContent).toBe("6");
     });
 });

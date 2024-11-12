@@ -4,16 +4,16 @@ import { Button } from "react-bootstrap";
 interface TwoDiceProps {
     initialLeftDie?: number;
     initialRightDie?: number;
+    rollDie?: () => number; // Allow injection of a custom rollDie function
 }
 
 export function TwoDice({
     initialLeftDie = 3,
-    initialRightDie = 4, // Set a different default value for the right die
+    initialRightDie = 4,
+    rollDie = () => Math.floor(Math.random() * 6) + 1, // Default roll function
 }: TwoDiceProps): React.JSX.Element {
     const [leftDie, setLeftDie] = useState<number>(initialLeftDie);
     const [rightDie, setRightDie] = useState<number>(initialRightDie);
-
-    const rollDie = () => Math.floor(Math.random() * 6) + 1; // Generates a number between 1 and 6
 
     const hasWon = leftDie === rightDie && leftDie !== 1;
     const hasLost = leftDie === 1 && rightDie === 1;

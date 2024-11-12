@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
 
 export function Counter(): React.JSX.Element {
-    const [value, setValue] = useState<number>(0);
+    const [count, setCount] = useState(0);
+
     return (
-        <span>
-            <Button
+        <div>
+            <p>{count}</p>
+            <button
                 onClick={() => {
-                    setValue(1 + value);
+                    setCount(count + 1);
                 }}
             >
                 Add One
-            </Button>
-            to {value}.
-        </span>
+            </button>
+        </div>
     );
 }
