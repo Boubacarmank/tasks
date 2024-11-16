@@ -8,6 +8,9 @@ import { DoubleHalf } from "./bad-components/DoubleHalf";
 import { ColoredBox } from "./bad-components/ColoredBox";
 import { ChooseTeam } from "./bad-components/ChooseTeam";
 import { Button } from "react-bootstrap";
+import { CheckAnswer } from "./form-components/CheckAnswer";
+import { EditMode } from "./form-components/EditMode";
+import { MultipleChoiceQuestion } from "./form-components/MultipleChoiceQuestion";
 
 function App(): React.JSX.Element {
     const handleClick = () => {
@@ -19,6 +22,15 @@ function App(): React.JSX.Element {
             <header className="App-header">
                 <h1>UM COS420 with React Hooks and TypeScript</h1>
             </header>
+            <hr></hr>
+            <CheckAnswer expectedAnswer="42"></CheckAnswer>
+            <hr></hr>
+            <EditMode></EditMode>
+            <hr></hr>
+            <MultipleChoiceQuestion
+                options={["a", "b", "c"]}
+                expectedAnswer="b"
+            ></MultipleChoiceQuestion>
             <img src="path/to/image.jpg" alt="Descriptive text" />{" "}
             {/* Image with alt */}
             <div style={{ backgroundColor: "red" }} className="red-background">
